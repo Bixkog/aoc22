@@ -1,5 +1,4 @@
 use crate::utils::parse_lines;
-use itertools::Itertools;
 
 fn play_to_score(play: String) -> Result<u64, String> {
     match play.as_str() {
@@ -64,7 +63,7 @@ mod tests {
 
     #[test]
     fn example_part_two() {
-        assert_eq!(task_part_two("example.txt").unwrap(), 45000);
+        assert_eq!(task_part_two("example.txt").unwrap(), 12);
     }
 
     #[test]
