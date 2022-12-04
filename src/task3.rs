@@ -44,7 +44,7 @@ fn get_item_priority(item: char) -> Result<u64, String> {
     } else if item_priority >= 65 { // 'A' == 65
         Ok(item_priority - 65 + 27)
     } else {
-        Err("Invalid item code: {item} == {item_priority}.".to_string())
+        Err(format!("Invalid item code: {} == {}.", item, item_priority).to_string())
     }
 }
 

@@ -11,7 +11,7 @@ fn play_to_score(play: String) -> Result<u64, String> {
         "C X" => Ok(6 + 1),
         "C Y" => Ok(0 + 2),
         "C Z" => Ok(3 + 3),
-        _ => Err("Invalid play: {play}".to_string())
+        _ => Err(format!("Invalid play: {}", play).to_string())
     }
 }
 
@@ -26,7 +26,7 @@ fn play_to_score_part_two(play: String) -> Result<u64, String> {
         "C X" => Ok(0 + 2),
         "C Y" => Ok(3 + 3),
         "C Z" => Ok(6 + 1),
-        _ => Err("Invalid play: {play}".to_string())
+        _ => Err(format!("Invalid play: {}", play).to_string())
     }
 }
 
