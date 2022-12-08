@@ -68,7 +68,7 @@ fn task_part_two(input_path: &str) -> Result<u64, String> {
     let min_dir_to_delete_size = free_space_needed - (total_space - root_size);
 
     dir_sizes.into_values().filter(|v| *v > min_dir_to_delete_size)
-        .sorted().next().ok_or("Could not find dir to delete.".to_string())
+        .min().ok_or("Could not find dir to delete.".to_string())
 }
 
 #[cfg(test)]
