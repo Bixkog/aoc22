@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use std::{fs::read_to_string, collections::HashMap};
 
 use crate::task7_parsing::{Command, parse_commands, LsRow};

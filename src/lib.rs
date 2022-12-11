@@ -12,3 +12,4 @@ mod task7;
 mod task7_parsing;
 mod task8;
 mod task9;
+mod task10;
