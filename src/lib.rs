@@ -1,4 +1,6 @@
 #![feature(slice_group_by)]
+#[macro_use]
+extern crate lazy_static;
 extern crate nom;
 
 mod utils;
@@ -13,3 +15,4 @@ mod task7_parsing;
 mod task8;
 mod task9;
 mod task10;
+mod task11;
