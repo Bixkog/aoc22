@@ -1,4 +1,4 @@
-use itertools::{Itertools, Zip, multizip, izip};
+use itertools::{Itertools, izip};
 use crate::utils::parse_lines;
 
 fn task(input_path: &str) -> Result<u64, String> {
