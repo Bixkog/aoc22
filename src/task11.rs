@@ -1,5 +1,3 @@
-use crate::utils::parse_lines;
-
 #[derive(Clone)]
 struct Monke {
     pub items: Vec<u64>,
