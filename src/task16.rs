@@ -131,38 +131,35 @@ fn walk(rooms: &HashMap<String, Room>, current_room: &String, time_left: u64, re
 fn walk2(rooms: &HashMap<String, Room>, 
         state: [(&String, u64); 2], 
         time_left: u64, 
-        released_pressure: u64,
+        released_pressure: Vec<(u64, u64)>,
         opened_valves: Vec<String>, 
-        score: u64
     ) -> u64 {
-    let mut max_score = score;
+    let mut max_score = released_pressure.iter().map(|(p, t)| p*t).sum();
     for i in 0..2 {
         if state[i].1 == time_left {
             for (target_room_name, distance) in rooms.get(state[i].0).unwrap()
                     .connected_to.iter()
                     .filter(|(_, d)| **d < time_left)
-                    .filter(|(name, _)| !opened_valves.contains(name))
+                    .filter(|(target_room_name, _)| !opened_valves.contains(target_room_name))
                     .sorted_by_key(|t| (rooms.get(t.0).unwrap().valve_pressure as f64 / *t.1 as f64) as u64)
                     .rev() {
+                let new_released_pressure = released_pressure.clone().into_iter()
+                    .chain(vec![(rooms.get(target_room_name).unwrap().valve_pressure, time_left - *distance - 1)]).collect_vec();
                 let min_distance;
-                let new_released_pressure;
                 if time_left - *distance - 1 > state[(i+1)%2].1 {
                     min_distance = *distance + 1;
-                    new_released_pressure = released_pressure + rooms.get(target_room_name).unwrap().valve_pressure;
                 } else {
                     min_distance = time_left - state[(i+1)%2].1;
-                    new_released_pressure = released_pressure + rooms.get(state[(i+1)%2].0).unwrap().valve_pressure;
                 }
                 unsafe {
-                if score + new_released_pressure * min_distance + released_pressure + max_pressure * (time_left - min_distance - 1) >= best_score {
+                if new_released_pressure.iter().map(|(p, t)| p*t).sum::<u64>() + max_pressure * (time_left - min_distance) >= best_score {
                     let mut new_state = state.clone();
                     new_state[i] = (target_room_name, time_left - distance - 1);
                     let valve_score = walk2(rooms, 
                                     new_state,
                                     time_left - min_distance,
                                     new_released_pressure,
-                                    opened_valves.clone().into_iter().chain(vec![target_room_name.clone()]).collect(),
-                                    score + released_pressure * min_distance);
+                                    opened_valves.clone().into_iter().chain(vec![target_room_name.clone()]).collect());
                     if max_score < valve_score {
                         max_score = valve_score;
                     }
@@ -172,13 +169,10 @@ fn walk2(rooms: &HashMap<String, Room>,
             break;
         }
     }
-    if max_score == score {
-        max_score += time_left * released_pressure;
-        
-    }
     unsafe {
         if max_score > best_score {
             best_score = max_score;
+            println!("{}", best_score);
         }
     }
     max_score
@@ -188,23 +182,8 @@ fn walk2(rooms: &HashMap<String, Room>,
 fn task(input_path: &str) -> Result<u64, String> {
     let lines: Vec<String> = parse_lines(input_path)?;
     let rooms = lines.into_iter().map(parse_room).collect::<Result<Vec<_>, _>>()?;
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
     let rooms = clear_0_pressure_rooms(rooms);
-    println!();
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
-
     let rooms = fill_all_rooms_distances(rooms);
-    println!();
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
     unsafe{
         max_pressure = rooms.values().map(|r| r.valve_pressure).sum();
     }
@@ -214,27 +193,12 @@ fn task(input_path: &str) -> Result<u64, String> {
 fn task_part_two(input_path: &str) -> Result<u64, String> {
     let lines: Vec<String> = parse_lines(input_path)?;
     let rooms = lines.into_iter().map(parse_room).collect::<Result<Vec<_>, _>>()?;
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
     let rooms = clear_0_pressure_rooms(rooms);
-    println!();
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
-
     let rooms = fill_all_rooms_distances(rooms);
-    println!();
-    println!("{}", rooms.len());
-    for r in rooms.iter() {
-        println!("{:?}", r);
-    }
     unsafe{
         max_pressure = rooms.values().map(|r| r.valve_pressure).sum();
     }
-    Ok(walk2(&rooms, [(&"AA".to_string(), 26), (&"AA".to_string(), 26)], 26, 0, vec!["AA".to_string()], 0))
+    Ok(walk2(&rooms, [(&"AA".to_string(), 26), (&"AA".to_string(), 26)], 26, vec![], vec!["AA".to_string()]))
 }
 
 #[cfg(test)]
@@ -242,7 +206,7 @@ mod tests {
     use crate::task16::{task, task_part_two};
 
     #[test]
-    fn example() {
+    fn exdample() {
         assert_eq!(task("example.txt").unwrap(), 1651);
     }
 
