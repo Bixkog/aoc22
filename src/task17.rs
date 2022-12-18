@@ -171,7 +171,7 @@ fn are_pieces_series_congruent(cycle1: &[Piece], cycle2: &[Piece]) -> Option<usi
     Some(y_distance)
 }
 
-fn has_cycle(pieces: &Vec<Piece>, min_cycle_length: usize) -> Option<((usize, usize))> {
+fn has_cycle(pieces: &Vec<Piece>, min_cycle_length: usize) -> Option<(usize, usize)> {
     for cycle_len in (min_cycle_length..(pieces.len() /2)).step_by(5) {
         let cycle1 = &pieces[pieces.len() - cycle_len*2..pieces.len() - cycle_len];
         let cycle2 = &pieces[pieces.len() - cycle_len..];
@@ -221,7 +221,7 @@ mod tests {
     use crate::task17::{task, task_part_two};
 
     #[test]
-    fn exdample() {
+    fn example() {
         assert_eq!(task("example.txt").unwrap(), 3068);
     }
 

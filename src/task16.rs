@@ -1,4 +1,3 @@
-use core::time;
 use std::{iter::FromIterator, collections::{HashMap, BinaryHeap}};
 
 use itertools::Itertools;
@@ -90,8 +89,8 @@ fn fill_all_rooms_distances(rooms: HashMap<String, Room>) -> HashMap<String, Roo
 }
 
 
-static mut best_score: u64 = 0;
-static mut max_pressure: u64 = 0;
+static mut BEST_SCORE: u64 = 0;
+static mut MAX_PRESSURE: u64 = 0;
 
 fn walk(rooms: &HashMap<String, Room>, current_room: &String, time_left: u64, released_pressure: u64, opened_valves: Vec<String>, score: u64) -> u64 {
     let mut max_score = score;
@@ -103,7 +102,7 @@ fn walk(rooms: &HashMap<String, Room>, current_room: &String, time_left: u64, re
         if !opened_valves.contains(target_room_name) {
             let new_released_pressure = released_pressure + rooms.get(target_room_name).unwrap().valve_pressure;
             unsafe {
-                if score + released_pressure * (distance + 1) + 2 * new_released_pressure + max_pressure * (time_left - distance) >= best_score {
+                if score + released_pressure * (distance + 1) + 2 * new_released_pressure + MAX_PRESSURE * (time_left - distance) >= BEST_SCORE {
                      let walk_score = walk(rooms, 
                                                 target_room_name, 
                                                 time_left - distance - 1, 
@@ -121,8 +120,8 @@ fn walk(rooms: &HashMap<String, Room>, current_room: &String, time_left: u64, re
         max_score += time_left * released_pressure;
     }
     unsafe {
-        if max_score > best_score {
-            best_score = max_score;
+        if max_score > BEST_SCORE {
+            BEST_SCORE = max_score;
         }
     }
     max_score
@@ -152,7 +151,7 @@ fn walk2(rooms: &HashMap<String, Room>,
                     min_distance = time_left - state[(i+1)%2].1;
                 }
                 unsafe {
-                if new_released_pressure.iter().map(|(p, t)| p*t).sum::<u64>() + max_pressure * (time_left - min_distance) >= best_score {
+                if new_released_pressure.iter().map(|(p, t)| p*t).sum::<u64>() + MAX_PRESSURE * (time_left - min_distance) >= BEST_SCORE {
                     let mut new_state = state.clone();
                     new_state[i] = (target_room_name, time_left - distance - 1);
                     let valve_score = walk2(rooms, 
@@ -170,9 +169,9 @@ fn walk2(rooms: &HashMap<String, Room>,
         }
     }
     unsafe {
-        if max_score > best_score {
-            best_score = max_score;
-            println!("{}", best_score);
+        if max_score > BEST_SCORE {
+            BEST_SCORE = max_score;
+            println!("{}", BEST_SCORE);
         }
     }
     max_score
@@ -185,7 +184,7 @@ fn task(input_path: &str) -> Result<u64, String> {
     let rooms = clear_0_pressure_rooms(rooms);
     let rooms = fill_all_rooms_distances(rooms);
     unsafe{
-        max_pressure = rooms.values().map(|r| r.valve_pressure).sum();
+        MAX_PRESSURE = rooms.values().map(|r| r.valve_pressure).sum();
     }
     Ok(walk(&rooms, &"AA".to_string(), 30, 0, vec!["AA".to_string()], 0))
 }
@@ -196,7 +195,7 @@ fn task_part_two(input_path: &str) -> Result<u64, String> {
     let rooms = clear_0_pressure_rooms(rooms);
     let rooms = fill_all_rooms_distances(rooms);
     unsafe{
-        max_pressure = rooms.values().map(|r| r.valve_pressure).sum();
+        MAX_PRESSURE = rooms.values().map(|r| r.valve_pressure).sum();
     }
     Ok(walk2(&rooms, [(&"AA".to_string(), 26), (&"AA".to_string(), 26)], 26, vec![], vec!["AA".to_string()]))
 }
@@ -206,7 +205,7 @@ mod tests {
     use crate::task16::{task, task_part_two};
 
     #[test]
-    fn exdample() {
+    fn example() {
         assert_eq!(task("example.txt").unwrap(), 1651);
     }
 
