@@ -26,3 +26,4 @@ mod task18;
 mod task19;
 mod task20;
 mod task21;
+mod task22;
